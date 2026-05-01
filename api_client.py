@@ -7,9 +7,9 @@ load_dotenv()
 
 def get_api_key():
     try:
-        return st.secrets["OPENAI_API_KEY"]   # for deployed app
-    except:
-        return os.getenv("OPENAI_API_KEY")    # for local
+        return st.secrets["OPENAI_API_KEY"]   # deployed
+    except Exception:
+        return os.getenv("OPENAI_API_KEY")    # local
 
 def call_llm(prompt):
     API_KEY = get_api_key()
@@ -21,12 +21,19 @@ def call_llm(prompt):
 
     headers = {
         "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        # 🔥 REQUIRED for OpenRouter
+        "HTTP-Referer": "https://naqe6v4bshlcjkgoksacu8.streamlit.app",
+        "X-Title": "AI API Debugger"
     }
 
     data = {
         "model": "openai/gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": prompt}]
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
     }
 
-    return requests.post(url, headers=headers, json=data)
+    response = requests.post(url, headers=headers, json=data)
+
+    return response
