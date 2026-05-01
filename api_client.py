@@ -5,10 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# 🔥 THIS LINE IS THE FIX
-API_KEY = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+def get_api_key():
+    try:
+        return st.secrets["OPENAI_API_KEY"]   # for deployed app
+    except:
+        return os.getenv("OPENAI_API_KEY")    # for local
 
 def call_llm(prompt):
+    API_KEY = get_api_key()
+
     if not API_KEY:
         raise ValueError("API key not found")
 
@@ -21,11 +26,7 @@ def call_llm(prompt):
 
     data = {
         "model": "openai/gpt-3.5-turbo",
-        "messages": [
-            {"role": "user", "content": prompt}
-        ]
+        "messages": [{"role": "user", "content": prompt}]
     }
 
-    response = requests.post(url, headers=headers, json=data)
-
-    return response
+    return requests.post(url, headers=headers, json=data)

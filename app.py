@@ -2,7 +2,6 @@ import streamlit as st
 from api_client import call_llm
 from utils import measure_latency, parse_error
 
-st.write("Secrets working:", "OPENAI_API_KEY" in st.secrets)
 st.set_page_config(page_title="AI API Debugger")
 
 st.title("🚀 AI API Playground + Debugger")
