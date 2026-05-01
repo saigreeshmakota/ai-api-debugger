@@ -1,12 +1,17 @@
 import requests
 import os
+import streamlit as st
 from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv("OPENAI_API_KEY")
+# 🔥 THIS LINE IS THE FIX
+API_KEY = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 def call_llm(prompt):
+    if not API_KEY:
+        raise ValueError("API key not found")
+
     url = "https://openrouter.ai/api/v1/chat/completions"
 
     headers = {
@@ -15,7 +20,7 @@ def call_llm(prompt):
     }
 
     data = {
-        "model": "openai/gpt-3.5-turbo",  # important for OpenRouter
+        "model": "openai/gpt-3.5-turbo",
         "messages": [
             {"role": "user", "content": prompt}
         ]
